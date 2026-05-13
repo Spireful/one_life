@@ -1,0 +1,2 @@
+Fighting with a creature
+If user dies, game restart
