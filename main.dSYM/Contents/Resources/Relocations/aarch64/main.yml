@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/ayush/developer/cpp/text_based_rpg/main'
-relocations:     []
-...
