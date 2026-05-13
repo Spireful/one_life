@@ -94,3 +94,7 @@ test
 
 
 # End of https://www.toptal.com/developers/gitignore/
+
+main
+todo.txt
+.vscode
