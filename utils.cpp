@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <iostream>
 #include <string>
+#include <random>
 
 int askIntInput()
 {
@@ -45,15 +46,25 @@ void combatSpider(Player &player, Enemy &spider)
         }
         else if (spider.hp <= 0)
         {
-            std::cout << "You defeated the Spider! \n";
+            std::cout << "You have defeated the Spider! \n";
             return;
         }
 
-        std::cout << "Press 1 to Attack\nPress 2 to Run\n";
+        std::cout << "Press 1 to Attack\nPress 2 to Run\nPress 3 to check Status\n";
         int input = askIntInput();
         if (input == 1)
         {
-            spider.hp -= player.meleeAttack;
+            int temp_player_attack{randomDamage(player.meleeAttack)};
+            spider.hp -= temp_player_attack;
+            std::cout << "You have dealt " << temp_player_attack << " Damage!\n";
+            if (spider.hp <= 0)
+            {
+                std::cout << "You have defeated the Spider! \n";
+                return;
+            }
+            int temp_spider_attack{randomDamage(spider.meleeAttack)};
+            player.hp -= temp_spider_attack;
+            std::cout << "The Spider has dealt " << temp_spider_attack << " Damage!\n";
         }
         else if (input == 2)
         {
@@ -61,5 +72,17 @@ void combatSpider(Player &player, Enemy &spider)
             player.hp -= 10;
             return;
         }
+        else if (input == 3)
+        {
+            std::cout << "Player has " << player.hp << "health remaining! \n"
+                      << "Spider has " << spider.hp << "health remaining! \n";
+        }
     }
+}
+
+int randomDamage(int attack)
+{
+    static std::mt19937 rng{std::random_device{}()};
+    std::uniform_int_distribution<> distr((attack * 8) / 10, (attack * 12) / 10);
+    return distr(rng);
 }

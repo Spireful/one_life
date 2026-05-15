@@ -1,7 +1,7 @@
 # One Life
 
 Making a 100LoC text-adventure game for CPP learning.
-Deadline: Sunday (16/05/2026)
+Deadline: Sunday (17/05/2026)
 
 ## Features
 - Health, Attack and Defence stats

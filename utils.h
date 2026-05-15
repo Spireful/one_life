@@ -6,3 +6,4 @@ std::string getUserName();
 void intro();
 void encounterSpider(Player &player, Enemy &spider);
 void combatSpider(Player &player, Enemy &spider);
+int randomDamage(int attack);
