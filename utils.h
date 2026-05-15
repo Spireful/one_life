@@ -1,9 +1,8 @@
-#ifndef UTILS_H
-#define UTILS_H
-
-#include <iostream>
-#include <string>
+#pragma once
+#include "structs.h"
 
 int askIntInput();
 std::string getUserName();
-#endif
+void intro();
+void encounterSpider(Player &player, Enemy &spider);
+void combatSpider(Player &player, Enemy &spider);
