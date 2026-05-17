@@ -10,5 +10,5 @@ int main()
     player.name = getUserName();
 
     intro();
-    combatSpider(player, spider);
+    layerOne(player);
 }

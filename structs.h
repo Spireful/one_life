@@ -5,8 +5,8 @@
 struct Player
 {
     std::string name{};
-    int maxHp{50};
-    int hp{50};
+    int maxHp{510};
+    int hp{510};
     int meleeAttack{10};
     int defence{5};
 };
@@ -20,4 +20,6 @@ struct Enemy
     int defence{};
 };
 
-inline Enemy spider{"Spider", 25, 25, 5, 3};
+inline Enemy spider{"Spider", 35, 35, 7, 4};
+inline Enemy goblin{"Goblin", 50, 50, 12, 6};
+inline Enemy ayush{"Ayush", 75, 75, 20, 10};
