@@ -5,7 +5,7 @@ Deadline: Sunday (17/05/2026)
 
 ## Features
 - Health, Attack and Defence stats
-- XP System Enabling Leveling Up
+- Leveling Up
 - Combat System Implementing RNG
 - 3+ Monsters
 - A Dungeon
