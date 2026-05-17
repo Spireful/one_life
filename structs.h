@@ -5,10 +5,10 @@
 struct Player
 {
     std::string name{};
-    int maxHp{50};
-    int hp{50};
-    int meleeAttack{10};
-    int defence{5};
+    int maxHp{125};
+    int hp{125};
+    int meleeAttack{2120};
+    int defence{521};
 };
 
 struct Enemy

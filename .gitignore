@@ -69,7 +69,7 @@ Temporary Items
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+*.dllx
 
 # Fortran module files
 *.mod

@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <random>
-
 int layer{};
 
 int askIntInput()
@@ -35,7 +34,6 @@ void combatEnemy(Player &player, Enemy &enemy)
             std::cout << "You died! \n";
             return;
         }
-
         std::cout << "Press 1 to Attack\n"
                      "Press 2 to Run\n"
                      "Press 3 to Check Status\n";
@@ -44,8 +42,8 @@ void combatEnemy(Player &player, Enemy &enemy)
         if (input == 1)
         {
             // Combat System
-            // Checks enemy health, does random damage to both within 25/20% - defence/3
-            int temp_player_attack{randomDamage(player.meleeAttack) - enemy.defence / 3};
+            // Checks enemy health, does random damage to both within 25/20% - defence/2
+            int temp_player_attack{randomDamage(player.meleeAttack) - enemy.defence / 2};
             temp_player_attack = checkDamage(temp_player_attack);
             enemy.hp -= temp_player_attack;
             std::cout << "You have dealt " << temp_player_attack << " Damage!\n";
@@ -53,23 +51,24 @@ void combatEnemy(Player &player, Enemy &enemy)
             {
                 std::cout << "You have defeated " << enemy.name << "! \n\n";
                 levelUp(player, layer);
-                if (randomOneToFour() == 1)
+                // Heals player
+                if (random(1, 4) == 1)
                 {
                     std::cout << "You have received a potion! \n"
-                                 "You drank the potion and healed up to max HP!";
+                                 "You drank the potion and healed up to max HP! \n";
                     player.hp = player.maxHp;
                 }
                 else
                 {
                     std::cout << "You ate the remains of " << enemy.name
                               << " (Ew) and have gained " << player.maxHp / 10 << " HP! \n";
-                    player.hp += player.maxHp / 10;
+                    player.hp = returnValidHp(player);
                 }
                 enemy.hp = enemy.maxHp;
                 return;
             }
 
-            int temp_enemy_attack{randomDamage(enemy.meleeAttack) - player.defence / 3};
+            int temp_enemy_attack{randomDamage(enemy.meleeAttack) - player.defence / 2};
             temp_enemy_attack = checkDamage(temp_enemy_attack);
             player.hp -= temp_enemy_attack;
             std::cout << enemy.name << " has dealt " << temp_enemy_attack << " Damage!\n";
@@ -133,16 +132,12 @@ void layerOne(Player &player)
     int layerOneVar{};
     while (true)
     {
-        std::cout << "Press 1 to continue roaming \n"
-                     "Press 2 to check stats \n";
-        if (layerOneVar >= 5)
-        {
-            std::cout << "Press 3 to go deeper into the layer \n";
-        }
+        showChoice(layerOneVar);
 
         int choice{askIntInput()};
         if (choice == 1)
         {
+            layerOneVar += 1;
             encounterEnemy(player, spider);
             if (playerDied(player))
             {
@@ -153,8 +148,56 @@ void layerOne(Player &player)
         {
             displayStats(player);
         }
-        layerOneVar += 1;
+        else if (choice == 3 && layerOneVar >= 5)
+        {
+            layerTwo(player);
+            return;
+        }
     }
+}
+
+void layerTwo(Player &player)
+{
+    std::cout << "You have reached deeper into the cave.. \n";
+    layer = 2;
+    int layerTwoVar{};
+    while (true)
+    {
+        showChoice(layerTwoVar);
+        int choice{askIntInput()};
+        if (choice == 1)
+        {
+            layerTwoVar += 1;
+            encounterEnemy(player, goblin);
+            if (playerDied(player))
+            {
+                return;
+            }
+        }
+        else if (choice == 2)
+        {
+            displayStats(player);
+        }
+        else if (choice == 3 && layerTwoVar >= 5)
+        {
+            layerThree(player);
+            return;
+        }
+    }
+    return;
+}
+
+void layerThree(Player &player)
+{
+    std::cout << "You notice a suspecious looking rock \n"
+              << "You slide it.. and see a humongous beast, very handsome \n"
+              << "Fight to the death tho \n";
+    combatEnemy(player, ayush);
+    if (!playerDied(player))
+    {
+        std::cout << "You won! \n";
+    }
+    return;
 }
 
 void levelUp(Player &player, int layer)
@@ -163,9 +206,33 @@ void levelUp(Player &player, int layer)
     if (layer == 1)
     {
         std::cout << "Do you want to increase: \n"
-                     "1. Max HP by 5 \n"
-                     "2. Attack by 2 \n"
-                     "3. Defence by 1? \n";
+                  << "1. Max HP by " << 5 << '\n'
+                  << "2. Attack by " << 2 << '\n'
+                  << "3. Defence by " << 1 << '\n';
+        int choice{};
+        do
+        {
+            choice = askIntInput();
+            if (choice == 1)
+            {
+                player.maxHp += 5;
+            }
+            else if (choice == 2)
+            {
+                player.meleeAttack += 2;
+            }
+            else if (choice == 3)
+            {
+                player.defence += 1;
+            }
+        } while (choice != 1 && choice != 2 && choice != 3);
+    }
+    else if (layer == 2)
+    {
+        std::cout << "Do you want to increase: \n"
+                  << "1. Max HP by " << 10 << '\n'
+                  << "2. Attack by " << 5 << '\n'
+                  << "3. Defence by " << 3 << '\n';
         int choice{};
         do
         {
@@ -202,9 +269,31 @@ int randomDamage(int attack)
     return distr(rng);
 }
 
-int randomOneToFour()
+int random(int first, int second)
 {
     static std::mt19937 rng{std::random_device{}()};
-    std::uniform_int_distribution<> distr(1, 4);
+    std::uniform_int_distribution<> distr(first, second);
     return distr(rng);
+}
+
+int returnValidHp(Player &player)
+{
+    if (player.hp + (player.maxHp / 10) >= player.maxHp)
+    {
+        return player.maxHp;
+    }
+    else
+    {
+        return player.hp + (player.maxHp / 10);
+    }
+}
+
+void showChoice(int layerVar)
+{
+    std::cout << "Press 1 to continue roaming \n"
+                 "Press 2 to check stats \n";
+    if (layerVar >= 5)
+    {
+        std::cout << "Press 3 to go deeper into the layer \n";
+    }
 }
