@@ -20,6 +20,6 @@ struct Enemy
     int defence{};
 };
 
-inline Enemy spider{"Spider", 35, 35, 7, 4};
-inline Enemy goblin{"Goblin", 50, 50, 12, 6};
-inline Enemy ayush{"Ayush", 75, 75, 20, 10};
+inline Enemy spider{"Spider", 35, 35, 8, 4};
+inline Enemy goblin{"Goblin", 75, 75, 17, 9};
+inline Enemy ayush{"Ayush", 125, 125, 30, 15};

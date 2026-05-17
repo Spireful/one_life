@@ -4,6 +4,8 @@
 #include <string>
 #include <random>
 
+int layer{};
+
 int askIntInput()
 {
     std::cout << ">> ";
@@ -12,6 +14,100 @@ int askIntInput()
     std::cout << '\n';
 
     return input;
+}
+
+int checkDamage(int damage)
+{
+    if (damage < 0)
+    {
+        return 0;
+    }
+    else
+        return damage;
+}
+
+void combatEnemy(Player &player, Enemy &enemy)
+{
+    while (true)
+    {
+        if (playerDied(player) == true)
+        {
+            std::cout << "You died! \n";
+            return;
+        }
+
+        std::cout << "Press 1 to Attack\n"
+                     "Press 2 to Run\n"
+                     "Press 3 to Check Status\n";
+
+        int input = askIntInput();
+        if (input == 1)
+        {
+            // Combat System
+            // Checks enemy health, does random damage to both within 25/20% - defence/3
+            int temp_player_attack{randomDamage(player.meleeAttack) - enemy.defence / 3};
+            temp_player_attack = checkDamage(temp_player_attack);
+            enemy.hp -= temp_player_attack;
+            std::cout << "You have dealt " << temp_player_attack << " Damage!\n";
+            if (enemy.hp <= 0)
+            {
+                std::cout << "You have defeated " << enemy.name << "! \n\n";
+                levelUp(player, layer);
+                if (randomOneToFour() == 1)
+                {
+                    std::cout << "You have received a potion! \n"
+                                 "You drank the potion and healed up to max HP!";
+                    player.hp = player.maxHp;
+                }
+                else
+                {
+                    std::cout << "You ate the remains of " << enemy.name
+                              << " (Ew) and have gained " << player.maxHp / 10 << " HP! \n";
+                    player.hp += player.maxHp / 10;
+                }
+                enemy.hp = enemy.maxHp;
+                return;
+            }
+
+            int temp_enemy_attack{randomDamage(enemy.meleeAttack) - player.defence / 3};
+            temp_enemy_attack = checkDamage(temp_enemy_attack);
+            player.hp -= temp_enemy_attack;
+            std::cout << enemy.name << " has dealt " << temp_enemy_attack << " Damage!\n";
+        }
+
+        else if (input == 2)
+        {
+            std::cout << player.name << " runs!\n";
+            player.hp -= enemy.meleeAttack / 2;
+            std::cout << enemy.name << "'s attack grazed you \n";
+            std::cout << "You have taken " << enemy.meleeAttack / 2 << " damage \n\n";
+            return;
+        }
+        else if (input == 3)
+        {
+            std::cout << "Player has " << player.hp << "health remaining! \n"
+                      << enemy.name << " has " << enemy.hp << "health remaining! \n";
+        }
+    }
+}
+
+void displayStats(Player &player)
+{
+    std::cout << "Stats: \n"
+                 "Max HP: "
+              << player.maxHp << "\n"
+                                 "HP: "
+              << player.hp << "\n"
+                              "Melee Attack: "
+              << player.meleeAttack << "\n"
+                                       "Defence: "
+              << player.defence << "\n";
+}
+
+void encounterEnemy(Player &player, Enemy &enemy)
+{
+    std::cout << "You encounter a " << enemy.name << '\n';
+    combatEnemy(player, enemy);
 }
 
 std::string getUserName()
@@ -31,71 +127,9 @@ void intro()
                  "Layer ONE. \n";
 }
 
-void encounterEnemy(Player &player, Enemy &enemy)
-{
-    std::cout << "You encounter a " << enemy.name << '\n';
-    combatEnemy(player, enemy);
-}
-
-void combatEnemy(Player &player, Enemy &enemy)
-{
-    while (true)
-    {
-        if (playerDied(player) == true)
-        {
-            std::cout << "You died! \n";
-            return;
-        }
-
-        std::cout << "Press 1 to Attack\n"
-                     "Press 2 to Run\n"
-                     "Press 3 to check Status\n";
-
-        int input = askIntInput();
-        if (input == 1)
-        {
-            // Combat System
-            // Checks enemy health, does random damage to both
-            int temp_player_attack{randomDamage(player.meleeAttack) - enemy.defence};
-            temp_player_attack = checkDamage(temp_player_attack);
-            enemy.hp -= temp_player_attack;
-            std::cout << "You have dealt " << temp_player_attack << " Damage!\n";
-            if (enemy.hp <= 0)
-            {
-                std::cout << "You have defeated " << enemy.name << "! \n";
-                enemy.hp = enemy.maxHp;
-                return;
-            }
-            int temp_enemy_attack{randomDamage(enemy.meleeAttack) - player.defence};
-            temp_enemy_attack = checkDamage(temp_enemy_attack);
-            player.hp -= temp_enemy_attack;
-            std::cout << "The Spider has dealt " << temp_enemy_attack << " Damage!\n";
-        }
-        else if (input == 2)
-        {
-            std::cout << player.name << " runs!\n";
-            player.hp -= enemy.meleeAttack / 2;
-            std::cout << enemy.name << "'s attack grazed you \n";
-            std::cout << "You have taken " << enemy.meleeAttack / 2 << " damage \n\n";
-            return;
-        }
-        else if (input == 3)
-        {
-            std::cout << "Player has " << player.hp << "health remaining! \n"
-                      << enemy.name << " has " << enemy.hp << "health remaining! \n";
-        }
-    }
-}
-
-int randomDamage(int attack)
-{
-    static std::mt19937 rng{std::random_device{}()};
-    std::uniform_int_distribution<> distr((attack * 8) / 10, (attack * 12) / 10);
-    return distr(rng);
-}
-
 void layerOne(Player &player)
 {
+    layer = 1;
     int layerOneVar{};
     while (true)
     {
@@ -110,6 +144,10 @@ void layerOne(Player &player)
         if (choice == 1)
         {
             encounterEnemy(player, spider);
+            if (playerDied(player))
+            {
+                return;
+            }
         }
         else if (choice == 2)
         {
@@ -119,34 +157,54 @@ void layerOne(Player &player)
     }
 }
 
-void displayStats(Player &player)
+void levelUp(Player &player, int layer)
 {
-    std::cout << "Stats: \n"
-                 "Max HP: "
-              << player.maxHp << "\n"
-                                 "HP: "
-              << player.hp << "\n"
-                              "Melee Attack: "
-              << player.meleeAttack << "\n"
-                                       "Defence: "
-              << player.defence << "\n";
-}
-
-int checkDamage(int damage)
-{
-    if (damage < 0)
+    std::cout << "You have leveled up! \n";
+    if (layer == 1)
     {
-        return 0;
+        std::cout << "Do you want to increase: \n"
+                     "1. Max HP by 5 \n"
+                     "2. Attack by 2 \n"
+                     "3. Defence by 1? \n";
+        int choice{};
+        do
+        {
+            choice = askIntInput();
+            if (choice == 1)
+            {
+                player.maxHp += 5;
+            }
+            else if (choice == 2)
+            {
+                player.meleeAttack += 2;
+            }
+            else if (choice == 3)
+            {
+                player.defence += 1;
+            }
+        } while (choice != 1 && choice != 2 && choice != 3);
     }
-    else
-        return damage;
 }
 
-int playerDied(Player &player)
+bool playerDied(Player &player)
 {
     if (player.hp <= 0)
     {
         return true;
     }
     return false;
+}
+
+int randomDamage(int attack)
+{
+    static std::mt19937 rng{std::random_device{}()};
+    std::uniform_int_distribution<> distr((attack * 8) / 10, (attack * 12) / 10);
+    return distr(rng);
+}
+
+int randomOneToFour()
+{
+    static std::mt19937 rng{std::random_device{}()};
+    std::uniform_int_distribution<> distr(1, 4);
+    return distr(rng);
 }
