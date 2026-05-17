@@ -195,7 +195,7 @@ void layerThree(Player &player)
     combatEnemy(player, ayush);
     if (!playerDied(player))
     {
-        std::cout << "You won! \n";
+        std::cout << "\nYou won! \n";
     }
     return;
 }
