@@ -5,8 +5,8 @@
 struct Player
 {
     std::string name{};
-    int maxHp{510};
-    int hp{510};
+    int maxHp{50};
+    int hp{50};
     int meleeAttack{10};
     int defence{5};
 };
